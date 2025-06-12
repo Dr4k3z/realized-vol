@@ -10,6 +10,8 @@ __pycache__/
 #custom 
 #optiver-realized-volatility-prediction
 .DS_store
+ols_summary
+imgs/
 
 # Distribution / packaging
 .Python
