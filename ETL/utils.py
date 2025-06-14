@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import re
 
 
 def wap2vol(df: pd.DataFrame) -> float:
@@ -163,3 +164,50 @@ def plot_importance(importance_df, title="", save_filepath=None, figsize=(8, 12)
     else:
         plt.savefig(save_filepath)
     plt.close()
+
+
+def regex_stock_id(file_path: str) -> int:
+    """Extracts the stock_id from a given file path using regex."""
+    match = re.search(r"stock_id=(\d+)", file_path)
+    return int(match.group(1)) if match else -1
+
+
+def calc_price(df: pd.DataFrame) -> float:
+    """Estimates the price scale from bid/ask spreads for a single time_id group."""
+    diff = abs(df.diff())
+    min_diff = np.nanmin(diff.where(lambda x: x > 0))
+    if pd.isna(min_diff) or min_diff == 0:
+        return np.nan
+    n_ticks = (diff / min_diff).round()
+    return 0.01 / np.nanmean(diff / n_ticks)
+
+
+def calc_prices(file_path: str) -> pd.DataFrame:
+    """Calculates denormalized prices for each time_id in a given file."""
+    df = pd.read_parquet(
+        file_path,
+        columns=["time_id", "ask_price1", "ask_price2", "bid_price1", "bid_price2"],
+    )
+    price_df = (
+        df.groupby("time_id", group_keys=False)
+        .apply(calc_price)
+        .to_frame("price")
+        .reset_index()
+    )
+    price_df["stock_id"] = regex_stock_id(file_path)
+    return price_df
+
+
+def calc_rv(r):
+    df = pd.read_parquet(r.book_path)
+    df["wap"] = (df.ask_price1 * df.bid_size1 + df.bid_price1 * df.ask_size1) / (
+        df.ask_size1 + df.bid_size1
+    )
+    df = (
+        df.groupby("time_id")
+        .wap.apply(lambda x: (np.log(x).diff() ** 2).sum() ** 0.5)
+        .reset_index()
+    )
+    df.rename(columns={"wap": "rv"}, inplace=True)
+    df["stock_id"] = r.stock_id
+    return df

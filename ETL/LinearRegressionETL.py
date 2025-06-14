@@ -5,43 +5,11 @@ import re
 from tqdm import tqdm
 from pathlib import Path
 from joblib import Parallel, delayed
-from .utils import rel_vol_time_id, volGK_time_id
+from .utils import rel_vol_time_id, volGK_time_id, calc_prices, regex_stock_id
 
 import warnings
 
 warnings.filterwarnings("ignore")
-
-
-def regex_stock_id(file_path: str) -> int:
-    """Extracts the stock_id from a given file path using regex."""
-    match = re.search(r"stock_id=(\d+)", file_path)
-    return int(match.group(1)) if match else -1
-
-
-def calc_price(df: pd.DataFrame) -> float:
-    """Estimates the price scale from bid/ask spreads for a single time_id group."""
-    diff = abs(df.diff())
-    min_diff = np.nanmin(diff.where(lambda x: x > 0))
-    if pd.isna(min_diff) or min_diff == 0:
-        return np.nan
-    n_ticks = (diff / min_diff).round()
-    return 0.01 / np.nanmean(diff / n_ticks)
-
-
-def calc_prices(file_path: str) -> pd.DataFrame:
-    """Calculates denormalized prices for each time_id in a given file."""
-    df = pd.read_parquet(
-        file_path,
-        columns=["time_id", "ask_price1", "ask_price2", "bid_price1", "bid_price2"],
-    )
-    price_df = (
-        df.groupby("time_id", group_keys=False)
-        .apply(calc_price)
-        .to_frame("price")
-        .reset_index()
-    )
-    price_df["stock_id"] = regex_stock_id(file_path)
-    return price_df
 
 
 def volume_imbalance_time_id(path: str) -> pd.Series:
