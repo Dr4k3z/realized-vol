@@ -10,7 +10,12 @@ from tqdm import tqdm
 from .utils import calc_prices, calc_rv
 
 warnings.filterwarnings("ignore")
-
+with warnings.catch_warnings():
+    warnings.filterwarnings(
+        "ignore",
+        message="All-NaN axis encountered",
+        category=RuntimeWarning
+    )
 
 def plot_emb(emb, color, name, kind="volatility", fig=None, ax=None):
     if fig is None or ax is None:
