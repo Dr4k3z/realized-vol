@@ -1,5 +1,7 @@
 # Forecasting Realized Volatility: an empirical study
 
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/Dr4k3z/realized-vol/:branch)
+
 This work has been developed by Matteo Campagnoli, Giacomo Kirn, Riccardo Girgenti and Francesco Ligorio, during the Econometrics course at PoliMi, Academic Yaer 2024-2025.
 
 Starting from the dataset provided by Optiver in the Kaggle "Forecasting Realized Volatility Challege", we explored various techniques to predict realized volatility. 
