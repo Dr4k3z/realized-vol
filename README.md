@@ -14,7 +14,7 @@ In the repo, you'll find three notebooks, each implementing a different approach
 
     3. `temporal-order.ipynb` Temporal Order reconstruction
 
-For more details, please read the extensive [project report](Forecasting_realized_Vol.pdf)). A final warning: the dataset is huge and to run our algorithms fastly we largely used Python `Parallel` package, which support the parallerization of processes on the CPU. We always take the maximum number of core available, `Parallel(n_jobs=-1)`; this is the fastest solution, but not necessarily the safest. Be aware of your computer resources before running this.
+For more details, please read the extensive [project report](Forecasting_Realized_Vol.pdf). A final warning: the dataset is huge and to run our algorithms fastly we largely used Python `Parallel` package, which support the parallerization of processes on the CPU. We always take the maximum number of core available, `Parallel(n_jobs=-1)`; this is the fastest solution, but not necessarily the safest. Be aware of your computer resources before running this.
 
 ## Installation
 
